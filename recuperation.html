@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Commandes</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f4f6f9, #e2e8f0);
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #0077cc;
+      margin-bottom: 30px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 30px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #005fa3;
+    }
+
+    .commande {
+      border-left: 6px solid #0077cc;
+      background: #f9f9f9;
+      padding: 20px;
+      margin-bottom: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .commande strong {
+      color: #444;
+    }
+
+    .commande img {
+      margin-top: 10px;
+      max-width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .supprimer-btn {
+      background-color: #dc3545;
+      margin-top: 15px;
+    }
+
+    .supprimer-btn:hover {
+      background-color: #b02a37;
+    }
+
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🔐 Espace Admin</h2>
+
+    <input type="password" id="admin-pass" placeholder="Mot de passe admin">
+    <button class="btn" onclick="verifier()">Afficher les commandes</button>
+
+    <div id="data-container" style="display: none;"></div>
+  </div>
+
+  <script>
+    function verifier() {
+      const mdp = document.getElementById("admin-pass").value;
+      if (mdp === "Rab@2021") {
+        document.getElementById("data-container").style.display = "block";
+        afficherCommandes();
+      } else {
+        alert("Mot de passe incorrect !");
+      }
+    }
+
+    function afficherCommandes() {
+      const data = JSON.parse(localStorage.getItem("transportData")) || [];
+      const container = document.getElementById("data-container");
+      container.innerHTML = "";
+
+      if (data.length === 0) {
+        container.innerHTML = "<p>Aucune commande enregistrée.</p>";
+        return;
+      }
+
+      data.forEach((item, index) => {
+        const commandeDiv = document.createElement("div");
+        commandeDiv.className = "commande";
+
+        commandeDiv.innerHTML = `
+          <strong>📦 Commande :</strong> ${item.numeroCommande}<br>
+          <strong>👤 Nom :</strong> ${item.nom}<br>
+          <strong>📧 Email :</strong> ${item.email}<br>
+          <strong>📏 Taille :</strong> ${item.taille}<br>
+          <strong>📍 Collecte :</strong> ${item.collecte}<br>
+          <strong>🎯 Destination :</strong> ${item.destination}<br>
+          <strong>🕒 Date :</strong> ${item.date}<br>
+          <strong>🖼️ Photo :</strong><br>
+          <img src="${item.photo}" alt="Photo du colis"><br>
+          <button class="btn supprimer-btn" onclick="supprimerCommande(${index})">🗑️ Supprimer cette commande</button>
+        `;
+        container.appendChild(commandeDiv);
+      });
+    }
+
+    function supprimerCommande(index) {
+      if (confirm("Voulez-vous vraiment supprimer cette commande ?")) {
+        let data = JSON.parse(localStorage.getItem("transportData")) || [];
+        data.splice(index, 1);
+        localStorage.setItem("transportData", JSON.stringify(data));
+        afficherCommandes();
+      }
+    }
+  </script>
+</body>
+</html>
